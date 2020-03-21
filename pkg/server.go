@@ -64,7 +64,12 @@ func (s *Server) query( w http.ResponseWriter, r *http.Request) {
 	  http.Error(w, "Sorry, cannot query datadog", http.StatusInternalServerError)
   }
 
-  response := helpers.ConvertDDResponseToGrafanaResponse( *ddResponse)
+  response, err := helpers.ConvertDDResponseToGrafanaResponse( *ddResponse)
+	if err != nil {
+		log.Printf("unable to convert DD response: %v", err)
+		http.Error(w, "Sorry, unable to process datadog response", http.StatusInternalServerError)
+	}
+
   fmt.Printf("query response %v\n", response)
 	w.WriteHeader(http.StatusOK)
 }
