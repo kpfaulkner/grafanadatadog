@@ -35,9 +35,9 @@ type DatadogQueryRequest struct {
 func GenerateDatadogQuery( query string, from time.Time, to time.Time ) DatadogQueryRequest {
 	q := DatadogQueryRequest{}
 	q.Query = query
-  q.Time.From = ""
-  q.Time.To = ""
-  q.Sort = "desc"
+  q.Time.From = from.Format("2006-01-02T15:04:05Z")
+  q.Time.To = to.Format("2006-01-02T15:04:05Z")
+  q.Sort = "asc"
   q.Limit = 50
 	return q
 }

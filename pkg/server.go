@@ -55,8 +55,17 @@ func (s *Server) testConnection( w http.ResponseWriter, r *http.Request) {
 
 // search is a POST
 func (s *Server) search( w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	searchResults := []string{"test1", "test2"}
 
+  j, err := json.Marshal(searchResults)
+  if err != nil {
+	  log.Printf("Error reading body: %v", err)
+	  http.Error(w, "cant search", http.StatusBadRequest)
+	  return
+  }
+
+	w.WriteHeader(http.StatusOK)
+  w.Write(j)
 }
 
 // query is a POST
@@ -77,7 +86,7 @@ func (s *Server) query( w http.ResponseWriter, r *http.Request) {
 	  return
   }
 
-  ddResponse, err := s.dd.queryDatadog("fluffy", request.Range.From, request.Range.To)
+  ddResponse, err := s.dd.queryDatadog("@environment:prod status:(error)", request.Range.From, request.Range.To)
   if err != nil {
 	  log.Printf("unable to query datadog: %v", err)
 	  http.Error(w, "Sorry, cannot query datadog", http.StatusInternalServerError)
@@ -92,6 +101,15 @@ func (s *Server) query( w http.ResponseWriter, r *http.Request) {
 	}
 
   fmt.Printf("query response %v\n", response)
+
+  json, err := json.Marshal(response)
+  if err != nil {
+	  log.Printf("unable to generate response: %v", err)
+	  http.Error(w, "Sorry, unable to generate datadog response", http.StatusInternalServerError)
+	  return
+  }
+
+  w.Write( json )
 	w.WriteHeader(http.StatusOK)
 }
 
