@@ -38,6 +38,6 @@ func GenerateDatadogQuery( query string, from time.Time, to time.Time ) DatadogQ
   q.Time.From = from.Format("2006-01-02T15:04:05Z")
   q.Time.To = to.Format("2006-01-02T15:04:05Z")
   q.Sort = "asc"
-  q.Limit = 50
+  q.Limit = 1000
 	return q
 }
