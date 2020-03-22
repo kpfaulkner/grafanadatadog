@@ -8,19 +8,38 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 // Server is the main struct for the datasource
 type Server struct {
   dd *Datadog
+  config models.Config
 }
 
 func NewServer() *Server {
 	s := Server{}
-  s.dd = NewDatadog("","")
+	s.config = readConfig()
+  s.dd = NewDatadog(s.config.DatadogAPIKey, s.config.DatadogAppKey)
 	s.routes()
+
 	return &s
 }
+
+func readConfig() models.Config{
+	configFile, err := os.Open("config.json")
+	defer configFile.Close()
+	if err != nil {
+		log.Panic("Unable to read config.json")
+	}
+
+	config := models.Config{}
+	jsonParser := json.NewDecoder(configFile)
+	jsonParser.Decode(&config)
+
+	return config
+}
+
 
 // routes sets up routes... duh :)
 func (s *Server) routes() {
