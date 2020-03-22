@@ -21,3 +21,23 @@ type DatadogQueryResponse struct {
 	Status    string `json:"status"`
 }
 
+
+type DatadogQueryRequest struct {
+	Query string `json:"query"`
+	Time  struct {
+		From string `json:"from"`
+		To   string `json:"to"`
+	} `json:"time"`
+	Sort  string `json:"sort"`
+	Limit int    `json:"limit"`
+}
+
+func GenerateDatadogQuery( query string, from time.Time, to time.Time ) DatadogQueryRequest {
+	q := DatadogQueryRequest{}
+	q.Query = query
+  q.Time.From = ""
+  q.Time.To = ""
+  q.Sort = "desc"
+  q.Limit = 50
+	return q
+}

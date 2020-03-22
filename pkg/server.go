@@ -17,7 +17,7 @@ type Server struct {
 
 func NewServer() *Server {
 	s := Server{}
-  s.dd = NewDatadog()
+  s.dd = NewDatadog("","")
 	s.routes()
 	return &s
 }
@@ -58,16 +58,18 @@ func (s *Server) query( w http.ResponseWriter, r *http.Request) {
 	  return
   }
 
-  ddResponse, err := s.dd.queryDatadog("fluffy")
+  ddResponse, err := s.dd.queryDatadog("fluffy", request.Range.From, request.Range.To)
   if err != nil {
 	  log.Printf("unable to query datadog: %v", err)
 	  http.Error(w, "Sorry, cannot query datadog", http.StatusInternalServerError)
+	  return
   }
 
   response, err := helpers.ConvertDDResponseToGrafanaResponse( *ddResponse)
 	if err != nil {
 		log.Printf("unable to convert DD response: %v", err)
 		http.Error(w, "Sorry, unable to process datadog response", http.StatusInternalServerError)
+		return
 	}
 
   fmt.Printf("query response %v\n", response)
